@@ -273,7 +273,8 @@ jobs:
                 key: ${{ runner.os }}-halo2-wasm-circuit
             - name: Install dependencies
               run: yarn install
-            - name: Run halo2-wasm-app server
-              run: yarn start &
-            - name: Test halo2-wasm-app in headless way
-              run: yarn test
+            - name: Run halo2-wasm-app server and test it
+              run: |
+                  yarn start &
+                  sleep 5
+                  yarn test
