@@ -275,6 +275,6 @@ jobs:
               run: yarn install
             - name: Run halo2-wasm-app server and test it
               run: |
-                  yarn start &
+                  nohup yarn start &
                   sleep 5
                   yarn test
