@@ -279,6 +279,7 @@ jobs:
                   for i in {1..10}; do
                     if curl --silent http://localhost:3000 > /dev/null; then
                       echo "Server is ready!"
+                      curl -g http://localhost:3000
                       break
                     fi
                     echo "Waiting for server..."
