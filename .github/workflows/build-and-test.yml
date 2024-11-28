@@ -286,5 +286,5 @@ jobs:
                   done
                   echo "--server log"
                   cat server.log
-                  echo "--------""
+                  echo "--------"
                   yarn test
