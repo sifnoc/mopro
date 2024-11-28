@@ -277,12 +277,14 @@ jobs:
               run: |
                   nohup yarn start > server.log 2>&1 &
                   for i in {1..10}; do
-                    if curl http://localhost:3000 > /dev/null; then
+                    if curl --silent http://localhost:3000 > /dev/null; then
                       echo "Server is ready!"
                       break
                     fi
                     echo "Waiting for server..."
                     sleep 2
                   done
+                  echo "--server log"
                   cat server.log
+                  echo "--------""
                   yarn test
