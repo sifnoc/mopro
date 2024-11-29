@@ -2,6 +2,12 @@ const { Builder, By } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
 (async function testStatusCheck() {
+    // TODO: remove after checking 
+    const chromeVersion = execSync('chrome --version', { encoding: 'utf-8' });
+    const chromedriverVersion = execSync('chromedriver --version', { encoding: 'utf-8' });
+    console.log(`Using ChromeDriver: ${chromeVersion.trim()}`);
+    console.log(`Using ChromeDriver: ${chromedriverVersion.trim()}`);
+    
     const options = new chrome.Options();
     options.addArguments('--headless');
 
