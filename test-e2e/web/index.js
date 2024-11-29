@@ -9,7 +9,7 @@ const chrome = require('selenium-webdriver/chrome');
 
     try {
         // Load the test page with `serve` default port
-        await driver.get('http://localhost:3000');
+        await driver.get('http://127.0.0.1:3000');
 
         // Wait for the test completion marker
         const statusDiv = await driver.findElement(By.id('test-status'));
