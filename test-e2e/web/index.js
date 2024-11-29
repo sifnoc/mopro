@@ -7,11 +7,6 @@ const chrome = require('selenium-webdriver/chrome');
     const chromeBin = process.env.CHROME_BIN || '/usr/bin/google-chrome-stable';
     const chromedriverBin = process.env.CHROMEDRIVER_BIN || '/usr/bin/chromedriver';
 
-    // Log detected paths
-    // TODO: remove after checking 
-    console.log(`Using Chrome binary: ${chromeBin}`);
-    console.log(`Using ChromeDriver binary: ${chromedriverBin}`);
-
     // Check versions of detected binaries
     const chromeVersion = execSync(`${chromeBin} --version`, { encoding: 'utf-8' });
     const chromedriverVersion = execSync(`${chromedriverBin} --version`, { encoding: 'utf-8' });
@@ -23,7 +18,7 @@ const chrome = require('selenium-webdriver/chrome');
     options.setChromeBinaryPath(chromeBin);
     options.addArguments('--headless');
 
-    const service = new chrome.ServiceBuilder(chromedriverBin).build(); // Use the custom ChromeDriver binary
+    const service = new chrome.ServiceBuilder(chromedriverBin);
     const driver = await new Builder()
         .forBrowser('chrome')
         .setChromeOptions(options)
