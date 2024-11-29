@@ -107,7 +107,11 @@ jobs:
             with:
               path: ~/.cargo/bin/wasm-pack
               key: ${{ runner.os }}-wasm-pack
-
+          - name: Restore cached chrome and chromedriver
+            uses: actions/cache@v4
+            with:
+              path: ~/.cargo/bin/wasm-pack
+              key: ${{ runner.os }}-cache-chrome-chromedriver
           - name: Check Chrome and ChromeDriver Versions
             run: |
               echo "google-chrome-stable location:"
