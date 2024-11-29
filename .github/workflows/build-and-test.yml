@@ -116,22 +116,23 @@ jobs:
                 /opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome
                 /opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver
               key: ${{ runner.os }}-cache-chrome-chromedriver
-          - name: Check Chrome and ChromeDriver Versions
+          - name: Verify Chrome and ChromeDriver
             run: |
-              echo "google-chrome-stable location:"
-              which $CHROME_BIN || echo "Chrome binary not found!"
-
-              echo "ChromeDriver location:"
-              which chromedriver || echo "ChromeDriver binary not found!"
-
-              if [ -f $(which chrome) ]; then
-                $(which google-chrome-stable) --version
+              echo "Checking Chrome binary at: $CHROME_BIN"
+              if [ -x "$CHROME_BIN" ]; then
+                echo "Chrome binary found:"
+                $CHROME_BIN --version
+              else
+                echo "Chrome binary not found or not executable!"
               fi
-
-              if [ -f $(which chromedriver) ]; then
-                $(which chromedriver) --version
+          
+              echo "Checking ChromeDriver binary:"
+              if [ -x "$CHROMEDRIVER_BIN" ]; then
+                echo "ChromeDriver binary found:"
+                $CHROMEDRIVER_BIN --version
+              else
+                echo "ChromeDriver binary not found or not executable!"
               fi
-    
           - name: Run wasm halo2 tests
             run: cd mopro-wasm && wasm-pack test --chrome --headless
     # test-e2e:
