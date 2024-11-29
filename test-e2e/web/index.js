@@ -21,7 +21,6 @@ const chrome = require('selenium-webdriver/chrome');
     const driver = await new Builder()
         .forBrowser('chrome')
         .setChromeOptions(options)
-        .setChromeService(service)
         .build();
     
     // Log ChromeDriver version via WebDriver
