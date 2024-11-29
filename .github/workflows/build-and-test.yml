@@ -81,7 +81,7 @@ jobs:
         - name: Setup Chrome
           uses: browser-actions/setup-chrome@v1
           with:
-            chrome-version: 130
+            chrome-version: 131
             install-chromedriver: true
     test-wasm-halo2:
         runs-on: ubuntu-latest
