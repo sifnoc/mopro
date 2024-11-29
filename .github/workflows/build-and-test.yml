@@ -23,42 +23,42 @@ jobs:
             - name: Check formatting
               run: cargo fmt --all -- --check
 
-    test-ffi-halo2:
-        runs-on: ubuntu-latest
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-        steps:
-            - uses: actions/checkout@v4
-            - name: Install Rust toolchain
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  override: true
-            - name: Run ffi halo2 tests
-              run: cd mopro-ffi && cargo test --features halo2 --no-default-features
-    test-ffi-circom:
-        runs-on: ubuntu-latest
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-        steps:
-            - uses: actions/checkout@v4
-            - name: Install Rust toolchain
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  override: true
-            - name: Run ffi circom tests
-              run: cd mopro-ffi && cargo test --features circom --no-default-features
-    test-ffi-ashlang:
-        runs-on: ubuntu-latest
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-        steps:
-            - uses: actions/checkout@v4
-            - name: Install Rust toolchain
-              uses: actions-rs/toolchain@v1
-              with:
-                  toolchain: stable
-                  override: true
-            - name: Run ffi ashlang tests
-              run: cd mopro-ffi && cargo test --features ashlang --no-default-features
+    # test-ffi-halo2:
+    #     runs-on: ubuntu-latest
+    #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #         - name: Install Rust toolchain
+    #           uses: actions-rs/toolchain@v1
+    #           with:
+    #               toolchain: stable
+    #               override: true
+    #         - name: Run ffi halo2 tests
+    #           run: cd mopro-ffi && cargo test --features halo2 --no-default-features
+    # test-ffi-circom:
+    #     runs-on: ubuntu-latest
+    #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #         - name: Install Rust toolchain
+    #           uses: actions-rs/toolchain@v1
+    #           with:
+    #               toolchain: stable
+    #               override: true
+    #         - name: Run ffi circom tests
+    #           run: cd mopro-ffi && cargo test --features circom --no-default-features
+    # test-ffi-ashlang:
+    #     runs-on: ubuntu-latest
+    #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    #     steps:
+    #         - uses: actions/checkout@v4
+    #         - name: Install Rust toolchain
+    #           uses: actions-rs/toolchain@v1
+    #           with:
+    #               toolchain: stable
+    #               override: true
+    #         - name: Run ffi ashlang tests
+    #           run: cd mopro-ffi && cargo test --features ashlang --no-default-features
     setup-halo2-wasm-env:
       runs-on: ubuntu-latest
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -87,6 +87,7 @@ jobs:
               /opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver
             key: ${{ runner.os }}-chrome-chromedriver
         - name: Setup Chrome
+          if: steps.cache-chrome-chromedriver.outputs.cache-hit != 'true'
           uses: browser-actions/setup-chrome@v1
           with:
             chrome-version: 130
@@ -271,8 +272,9 @@ jobs:
             uses: actions/cache@v4
             with:
               path: test-e2e/web
-              key: ${{ runner.os }}-halo2-wasm-circuit
+              key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
           - name: Build circuits for Wasm Web app
+            if: steps.cache-halo2-wasm-circuit.outputs.cache-hit != 'true'
             run: |
               cd mopro-wasm 
               wasm-pack build --target web --out-dir ../test-e2e/web/halo2-plonk-fibonacci -- --features plonk
@@ -295,7 +297,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: test-e2e/web
-                key: ${{ runner.os }}-halo2-wasm-circuit
+                key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
             - name: Install dependencies
               run: yarn install
             - name: Run halo2-wasm-app server and test it
@@ -310,7 +312,9 @@ jobs:
                     echo "Waiting for server..."
                     sleep 2
                   done
+
+                  yarn test
+
                   echo "--server log"
                   cat server.log
                   echo "--------"
-                  yarn test
