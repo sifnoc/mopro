@@ -11,8 +11,8 @@ on:
 
 env:
     CARGO_TERM_COLOR: always
-    CHROME_BIN: ""
-    CHROMEDRIVER_BIN: ""
+    CHROME_BIN: "/opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome"
+    CHROMEDRIVER_BIN: "/opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver"
 
 jobs:
     # TODO: Add a job to run clippy
@@ -94,10 +94,10 @@ jobs:
           with:
             chrome-version: 130
             install-chromedriver: true
-        - name: Set environment variables globally for chrome and chromedriver
-          run: |
-            echo "CHROME_BIN=/opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome" >> $GITHUB_ENV
-            echo "CHROMEDRIVER_BIN=/opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver" >> $GITHUB_ENV
+        # - name: Set environment variables globally for chrome and chromedriver
+        #   run: |
+        #     echo "CHROME_BIN=/opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome" >> $GITHUB_ENV
+        #     echo "CHROMEDRIVER_BIN=/opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver" >> $GITHUB_ENV
     test-wasm-halo2:
         runs-on: ubuntu-latest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
