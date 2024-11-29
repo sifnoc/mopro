@@ -96,8 +96,8 @@ jobs:
             install-chromedriver: true
         - name: Set environment variables globally for chrome and chromedriver
           run: |
-            echo "CHROME_BIN={{ steps.setup-chrome-chromedriver.outputs.chrome-path }}" >> $GITHUB_ENV
-            echo "CHROMEDRIVER_BIN={{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}" >> $GITHUB_ENV
+            echo "CHROME_BIN=${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}" >> $GITHUB_ENV
+            echo "CHROMEDRIVER_BIN=${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}" >> $GITHUB_ENV
     test-wasm-halo2:
         runs-on: ubuntu-latest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
