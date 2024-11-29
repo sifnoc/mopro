@@ -89,8 +89,8 @@ jobs:
               /opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver
             key: ${{ runner.os }}-cache-chrome-chromedriver
         - name: Setup Chrome and ChromeDriver
-          id: setup-chrome-chromedriver
           uses: browser-actions/setup-chrome@v1
+          id: setup-chrome-chromedriver
           with:
             chrome-version: 130
             install-chromedriver: true
@@ -284,7 +284,10 @@ jobs:
             id: cache-halo2-wasm-circuit
             uses: actions/cache@v4
             with:
-              path: test-e2e/web
+              path: |
+                test-e2e/web/halo2-plonk-fibonacci
+                test-e2e/web/halo2-hyperplonk-fibonacci
+                test-e2e/web/halo2-gemini-fibonacci
               key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
           - name: Build circuits for Wasm Web app
             if: steps.cache-halo2-wasm-circuit.outputs.cache-hit != 'true'
