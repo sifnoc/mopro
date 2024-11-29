@@ -310,19 +310,13 @@ jobs:
               run: yarn install
             - name: Run halo2-wasm-app server and test it
               run: |
-                  nohup yarn start > server.log 2>&1 &
-                  for i in {1..10}; do
+                  nohup yarn start &
+                  for i in {1..30}; do
                     if curl --silent http://localhost:3000 > /dev/null; then
                       echo "Server is ready!"
-                      curl -g http://localhost:3000
                       break
                     fi
                     echo "Waiting for server..."
-                    sleep 2
+                    sleep 1
                   done
-
                   yarn test
-
-                  echo "--server log"
-                  cat server.log
-                  echo "--------"
