@@ -11,6 +11,8 @@ on:
 
 env:
     CARGO_TERM_COLOR: always
+    CHROME_BIN: ""
+    CHROMEDRIVER_BIN: ""
 
 jobs:
     # TODO: Add a job to run clippy
@@ -110,7 +112,9 @@ jobs:
           - name: Restore cached chrome and chromedriver
             uses: actions/cache@v4
             with:
-              path: ~/.cargo/bin/wasm-pack
+              path: |
+                /opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome
+                /opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver
               key: ${{ runner.os }}-cache-chrome-chromedriver
           - name: Check Chrome and ChromeDriver Versions
             run: |
