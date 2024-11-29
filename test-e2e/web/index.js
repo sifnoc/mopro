@@ -2,17 +2,33 @@ const { execSync } = require('child_process');
 const { Builder, By } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
-(async function testStatusCheck() {
-    // TODO: remove after checking 
-    const chromeVersion = execSync('chrome --version', { encoding: 'utf-8' });
-    const chromedriverVersion = execSync('chromedriver --version', { encoding: 'utf-8' });
-    console.log(`Using ChromeDriver: ${chromeVersion.trim()}`);
-    console.log(`Using ChromeDriver: ${chromedriverVersion.trim()}`);
+(async function testStatusCheck() {    
+    // Detect Chrome and ChromeDriver paths
+    const chromeBin = process.env.CHROME_BIN || '/usr/bin/google-chrome-stable';
+    const chromedriverBin = process.env.CHROMEDRIVER_BIN || '/usr/bin/chromedriver';
 
+    // Log detected paths
+    // TODO: remove after checking 
+    console.log(`Using Chrome binary: ${chromeBin}`);
+    console.log(`Using ChromeDriver binary: ${chromedriverBin}`);
+
+    // Check versions of detected binaries
+    const chromeVersion = execSync(`${chromeBin} --version`, { encoding: 'utf-8' });
+    const chromedriverVersion = execSync(`${chromedriverBin} --version`, { encoding: 'utf-8' });
+    console.log(`Chrome version: ${chromeVersion.trim()}`);
+    console.log(`ChromeDriver version: ${chromedriverVersion.trim()}`);
+
+    // Configure Selenium WebDriver to use the detected binaries
     const options = new chrome.Options();
+    options.setChromeBinaryPath(chromeBin);
     options.addArguments('--headless');
 
-    const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
+    const service = new chrome.ServiceBuilder(chromedriverBin).build(); // Use the custom ChromeDriver binary
+    const driver = await new Builder()
+        .forBrowser('chrome')
+        .setChromeOptions(options)
+        .setChromeService(service)
+        .build();
 
     try {
         // Load the test page with `serve` default port
