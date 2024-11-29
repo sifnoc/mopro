@@ -11,8 +11,6 @@ on:
 
 env:
     CARGO_TERM_COLOR: always
-    CHROME_BIN: ""
-    CHROMEDRIVER_BIN: "/opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver"
 
 jobs:
     # TODO: Add a job to run clippy
@@ -64,6 +62,9 @@ jobs:
     setup-halo2-wasm-env:
       runs-on: ubuntu-latest
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+      outputs:
+        chrome-path: ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
+        chromedriver-path: ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
       steps:
         - uses: actions/checkout@v4
         - name: Install Rust toolchain
@@ -80,28 +81,32 @@ jobs:
         - name: Install wasm-pack
           if: steps.cache-wasm-pack.outputs.cache-hit != 'true'
           run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
-        - name: Cache chrome and chromedriver
-          id: cache-chrome-chromedriver
-          uses: actions/cache@v4
-          with:
-            path: |
-              /opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome
-              /opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver
-            key: ${{ runner.os }}-cache-chrome-chromedriver
         - name: Setup Chrome and ChromeDriver
           uses: browser-actions/setup-chrome@v1
           id: setup-chrome-chromedriver
           with:
             chrome-version: 130
             install-chromedriver: true
-        - name: Set environment variables globally for chrome and chromedriver
+        - name: Cache Chrome and ChromeDriver
+          id: cache-chrome-chromedriver
+          uses: actions/cache@v4
+          with:
+            path: |
+              ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
+              ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
+            key: ${{ runner.os }}-cache-chrome-chromedriver
+        - name: Define outputs for Chrome and ChromeDriver
+          id: define-outputs
           run: |
-            echo "CHROME_BIN=${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}" >> $GITHUB_ENV
-            echo "CHROMEDRIVER_BIN=${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}" >> $GITHUB_ENV
+            echo "::set-output name=chrome-path::${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}"
+            echo "::set-output name=chromedriver-path::${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}"
     test-wasm-halo2:
         runs-on: ubuntu-latest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
         needs: setup-halo2-wasm-env
+        env:
+          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
+          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
         steps:
           - uses: actions/checkout@v4
           - name: Restore cached wasm-pack
@@ -113,8 +118,8 @@ jobs:
             uses: actions/cache@v4
             with:
               path: |
-                /opt/hostedtoolcache/setup-chrome/chromium/130.0.6723.116/x64/chrome
-                /opt/hostedtoolcache/setup-chrome/chromedriver/130.0.6723.116/x64/chromedriver
+                ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
+                ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
               key: ${{ runner.os }}-cache-chrome-chromedriver
           - name: Verify Chrome and ChromeDriver
             run: |
@@ -298,7 +303,12 @@ jobs:
               wasm-pack build --target web --out-dir ../test-e2e/web/halo2-gemini-fibonacci -- --features gemini
     test-halo2-wasm-web:
         runs-on: ubuntu-latest
-        needs: build-halo2-wasm-web
+        needs:
+          - setup-halo2-wasm-env
+          - build-halo2-wasm-web
+        env:
+          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
+          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
         defaults:
           run:
               working-directory: test-e2e/web
@@ -309,15 +319,26 @@ jobs:
               with:
                 path: ~/.cargo/bin/wasm-pack
                 key: ${{ runner.os }}-cache-chrome-chromedriver
+            - name: Restore cached chrome and chromedriver
+              uses: actions/cache@v4
+              with:
+                path: |
+                  ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
+                  ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
+                key: ${{ runner.os }}-cache-chrome-chromedriver
             - name: Restore cached halo2 wasm circuit
               uses: actions/cache@v4
               with:
-                path: test-e2e/web
+                path: |
+                  test-e2e/web/halo2-plonk-fibonacci
+                  test-e2e/web/halo2-hyperplonk-fibonacci
+                  test-e2e/web/halo2-gemini-fibonacci
                 key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
             - name: Install dependencies
               run: yarn install
             - name: Run halo2-wasm-app server and test it
               run: |
+                  cat index.js
                   nohup yarn start &
                   for i in {1..30}; do
                     if curl --silent http://localhost:3000 > /dev/null; then
