@@ -105,10 +105,19 @@ jobs:
 
           - name: Check Chrome and ChromeDriver Versions
             run: |
-              echo "Chrome version:"
-              which chrome
-              echo "ChromeDriver version:"
-              which chromedriver
+              echo "Chrome location:"
+              which chrome || echo "Chrome binary not found!"
+
+              echo "ChromeDriver location:"
+              which chromedriver || echo "ChromeDriver binary not found!"
+
+              if [ -f $(which chrome) ]; then
+                $(which chrome) --version
+              fi
+
+              if [ -f $(which chromedriver) ]; then
+                $(which chromedriver) --version
+              fi
     
           - name: Run wasm halo2 tests
             run: cd mopro-wasm && wasm-pack test --chrome --headless
