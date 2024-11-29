@@ -18,12 +18,15 @@ const chrome = require('selenium-webdriver/chrome');
     options.setChromeBinaryPath(chromeBin);
     options.addArguments('--headless');
 
-    const service = new chrome.ServiceBuilder(chromedriverBin);
     const driver = await new Builder()
         .forBrowser('chrome')
         .setChromeOptions(options)
         .setChromeService(service)
         .build();
+    
+    // Log ChromeDriver version via WebDriver
+    const driverVersion = await driver.executeScript('return navigator.userAgent');
+    console.log(`WebDriver user agent: ${driverVersion}`);
 
     try {
         // Load the test page with `serve` default port
