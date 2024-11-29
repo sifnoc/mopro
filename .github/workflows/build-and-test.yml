@@ -92,6 +92,21 @@ jobs:
           with:
             chrome-version: 130
             install-chromedriver: true
+        - name: Check Chrome and ChromeDriver Versions
+          run: |
+            echo "google-chrome-stable location:"
+            which google-chrome-stable || echo "Chrome binary not found!"
+
+            echo "ChromeDriver location:"
+            which chromedriver || echo "ChromeDriver binary not found!"
+
+            if [ -f $(which chrome) ]; then
+              $(which google-chrome-stable) --version
+            fi
+
+            if [ -f $(which chromedriver) ]; then
+              $(which chromedriver) --version
+            fi
     test-wasm-halo2:
         runs-on: ubuntu-latest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -106,14 +121,14 @@ jobs:
 
           - name: Check Chrome and ChromeDriver Versions
             run: |
-              echo "Chrome location:"
-              which chrome || echo "Chrome binary not found!"
+              echo "google-chrome-stable location:"
+              which google-chrome-stable || echo "Chrome binary not found!"
 
               echo "ChromeDriver location:"
               which chromedriver || echo "ChromeDriver binary not found!"
 
               if [ -f $(which chrome) ]; then
-                $(which chrome) --version
+                $(which google-chrome-stable) --version
               fi
 
               if [ -f $(which chromedriver) ]; then
