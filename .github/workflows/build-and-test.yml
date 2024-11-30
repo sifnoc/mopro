@@ -141,11 +141,12 @@ jobs:
           #     fi
           - name: Run wasm halo2 tests
             run: |
-              echo "override default chrome path for 'wasm-pack test'"
-              ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }} /usr/local/bin/google-chrome-stable
-              google-chrome-stable
+              echo "Override default chrome path for 'wasm-pack test'"
+              ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome /usr/local/bin/google-chrome-stable
+              echo "Check override chrome version"
+              google-chrome-stable --version
               cd mopro-wasm
-              wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }} --headless
+              wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}/chromedriver --headless
     # test-e2e:
     #     runs-on: ubuntu-latest
     #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -313,8 +314,8 @@ jobs:
           - setup-halo2-wasm-env
           - build-halo2-wasm-web
         env:
-          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
-          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
+          CHROME_DIR: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
+          CHROMEDRIVER_DIR: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
         defaults:
           run:
               working-directory: test-e2e/web
@@ -345,18 +346,18 @@ jobs:
             # TODO: remove verifying
             - name: Verify Chrome and ChromeDriver
               run: |
-                echo "Checking Chrome binary at: $CHROME_BIN"
-                if [ -x "$CHROME_BIN" ]; then
+                echo "Checking Chrome binary at: $CHROME_DIR"
+                if [ -x "$CHROME_DIR" ]; then
                   echo "Chrome binary found:"
-                  $CHROME_BIN --version
+                  $CHROME_DIR/chrome --version
                 else
                   echo "Chrome binary not found or not executable!"
                 fi
             
                 echo "Checking ChromeDriver binary:"
-                if [ -x "$CHROMEDRIVER_BIN" ]; then
-                  echo "ChromeDriver binary found:"
-                  $CHROMEDRIVER_BIN --version
+                if [ -x "$CHROMEDRIVER_DIR" ]; then
+                  echo "ChromeDriver binary found: $CHROMEDRIVER_DIR"
+                  $CHROMEDRIVER_DIR/chromedriver --version
                 else
                   echo "ChromeDriver binary not found or not executable!"
                 fi
