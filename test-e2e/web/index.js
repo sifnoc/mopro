@@ -2,34 +2,32 @@ const { execSync } = require('child_process');
 const { Builder, By } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
-(async function testStatusCheck() {    
-    // Detect Chrome and ChromeDriver paths
-    const chromeBin = process.env.CHROME_BIN || '/usr/bin/google-chrome-stable';
-    const chromedriverBin = process.env.CHROMEDRIVER_BIN || '/usr/bin/chromedriver';
-
-    // Check versions of detected binaries
-    const chromeVersion = execSync(`${chromeBin} --version`, { encoding: 'utf-8' });
-    const chromedriverVersion = execSync(`${chromedriverBin} --version`, { encoding: 'utf-8' });
-    console.log(`Chrome version: ${chromeVersion.trim()}`);
-    console.log(`ChromeDriver version: ${chromedriverVersion.trim()}`);
-
-    // Configure Selenium WebDriver to use the detected binaries
+(async function testStatusCheck() {
+    // Configure chrome if env set
     const options = new chrome.Options();
-    options.setChromeBinaryPath(chromeBin);
+    if (process.env.CHROME_BIN) {
+        options.setChromeBinaryPath(process.env.CHROME_BIN);
+    }
     options.addArguments('--headless');
 
-    const driver = await new Builder()
-        .forBrowser('chrome')
-        .setChromeOptions(options)
-        .build();
+    const driverBuilder = new Builder()
+    .forBrowser('chrome')
+    .setChromeOptions(options)
+    
+    // Configure chromewdriver if env set
+    if (process.env.CHROMEDRIVER_BIN) {
+        const service = new chrome.ServiceBuilder(process.env.CHROMEDRIVER_BIN);
+        driverBuilder.setChromeService(service);
+    }
+    
+    const driver = await driverBuilder.build()
     
     // Log ChromeDriver version via WebDriver
     const driverVersion = await driver.executeScript('return navigator.userAgent');
     console.log(`WebDriver user agent: ${driverVersion}`);
 
     try {
-        // Load the test page with `serve` default port
-        await driver.get('http://127.0.0.1:3000');
+        await driver.get('http://localhost:3000');
 
         // Wait for the test completion marker
         const statusDiv = await driver.findElement(By.id('test-status'));
