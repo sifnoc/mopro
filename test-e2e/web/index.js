@@ -14,24 +14,33 @@ const chrome = require('selenium-webdriver/chrome');
 
     const driverBuilder = new Builder()
     .forBrowser('chrome')
-    .setChromeOptions(options)
+    .setChromeOptions(options);
     
     // Configure chromewdriver if env set
     if (process.env.CHROMEDRIVER_BIN) {
         const service = new chrome.ServiceBuilder(process.env.CHROMEDRIVER_BIN)
+        .addArguments('--timeout=120000')
         .loggingTo('chromedriver.log')
         .enableVerboseLogging();
         driverBuilder.setChromeService(service);
     }
     
     try {
-        const driver = await driverBuilder.build()
+        const driver = await driverBuilder.build();
+        console.log("driver initiated");
+        await driver.manage().setTimeouts({
+            implicit: 10000,
+            pageLoad: 120000,
+            script: 120000,
+        });
+        console.log("extend timeout params");
+        
         
         // Log ChromeDriver version via WebDriver
         const driverVersion = await driver.executeScript('return navigator.userAgent');
         console.log(`WebDriver user agent: ${driverVersion}`);
 
-        await driver.get('http://localhost:3000');
+        await driver.get('http://localhost:33499');
 
         // Wait for the test completion marker
         const statusDiv = await driver.findElement(By.id('test-status'));
