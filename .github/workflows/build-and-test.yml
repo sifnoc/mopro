@@ -63,8 +63,8 @@ jobs:
       runs-on: ubuntu-latest
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
       outputs:
-        chrome-dir: ${{ steps.cache-chrome-chromedriver-dir.outputs.chrome-dir }}
-        chromedriver-dir: ${{ steps.cache-chrome-chromedriver-dir.outputs.chromedriver-dir }}
+        chrome-dir: ${{ steps.parsed-chrome-chromedriver-dir.outputs.chrome-dir }}
+        chromedriver-dir: ${{ steps.parsed-chrome-chromedriver-dir.outputs.chromedriver-dir }}
       steps:
         - uses: actions/checkout@v4
         - name: Install Rust toolchain
@@ -87,19 +87,19 @@ jobs:
           with:
             chrome-version: 130
             install-chromedriver: true
-        # - name: Cache Chrome and ChromeDriver
-        #   id: cache-chrome-chromedriver
-        #   uses: actions/cache@v4
-        #   with:
-        #     path: |
-        #       ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
-        #       ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
-            # key: ${{ runner.os }}-cache-chrome-chromedriver
         - name: Parse Chrome and ChromeDriver Directories
-          id: cache-chrome-chromedriver-dir
+          id: parsed-chrome-chromedriver-dir
           run: |
             echo "chrome-dir=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }})" >> $GITHUB_OUTPUT
             echo "chromedriver-dir=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }})" >> $GITHUB_OUTPUT
+        - name: Cache Chrome and ChromeDriver
+          id: cache-chrome-chromedriver
+          uses: actions/cache@v4
+          with:
+            path: |
+              ${{ steps.parsed-chrome-chromedriver-dir.outputs.chrome-dir }}
+              ${{ steps.parsed-chrome-chromedriver-dir.outputs.chromedriver-dir }}
+            key: ${{ runner.os }}-cache-chrome-chromedriver
       
     test-wasm-halo2:
         runs-on: ubuntu-latest
@@ -144,6 +144,7 @@ jobs:
               echo "Override default chrome path for 'wasm-pack test'"
               ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome /usr/local/bin/google-chrome-stable
               echo "Check override chrome version"
+              which google-chrome-stable
               google-chrome-stable --version
               cd mopro-wasm
               wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}/chromedriver --headless
