@@ -342,8 +342,8 @@ jobs:
               run: |
                   ls ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
                   ls ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }} 
-            - name: Testing chrome start
-              run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome --headless --no-sandbox
+            # - name: Testing chrome start
+            #   run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome --headless --no-sandbox
             # TODO: remove verifying
             - name: Verify Chrome and ChromeDriver
               run: |
