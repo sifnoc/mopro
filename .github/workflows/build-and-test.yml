@@ -63,8 +63,8 @@ jobs:
       runs-on: ubuntu-latest
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
       outputs:
-        chrome-path: ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
-        chromedriver-path: ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
+        chrome-dir: ${{ steps.setup-chrome-chromedriver.outputs.chrome-dir }}
+        chromedriver-dir: ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-dir }}
       steps:
         - uses: actions/checkout@v4
         - name: Install Rust toolchain
@@ -87,21 +87,29 @@ jobs:
           with:
             chrome-version: 130
             install-chromedriver: true
-        - name: Cache Chrome and ChromeDriver
-          id: cache-chrome-chromedriver
-          uses: actions/cache@v4
-          with:
-            path: |
-              ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
-              ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
-            key: ${{ runner.os }}-cache-chrome-chromedriver
+        # - name: Cache Chrome and ChromeDriver
+        #   id: cache-chrome-chromedriver
+        #   uses: actions/cache@v4
+        #   with:
+        #     path: |
+        #       ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
+        #       ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
+            # key: ${{ runner.os }}-cache-chrome-chromedriver
+        - name: Get Chrome and ChromeDriver Directories
+          id: get-chrome-dir
+          run: |
+            echo "CHROME_DIR=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }})" >> $GITHUB_ENV
+            echo "CHROMEDRIVER_DIR=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }})" >> $GITHUB_ENV
+            echo "::set-output name=chrome-dir::$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }})"
+            echo "::set-output name=chromedriver-dir::$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }})"
+      
     test-wasm-halo2:
         runs-on: ubuntu-latest
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
         needs: setup-halo2-wasm-env
         env:
-          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
-          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
+          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
+          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
         steps:
           - uses: actions/checkout@v4
           - name: Restore cached wasm-pack
@@ -113,8 +121,8 @@ jobs:
             uses: actions/cache@v4
             with:
               path: |
-                ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
-                ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
+                ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
+                ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
               key: ${{ runner.os }}-cache-chrome-chromedriver
           # - name: Verify Chrome and ChromeDriver
           #   run: |
@@ -136,9 +144,10 @@ jobs:
           - name: Run wasm halo2 tests
             run: |
               echo "override default chrome path for 'wasm-pack test'"
-              ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }} /usr/local/bin/google-chrome-stable
+              ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }} /usr/local/bin/google-chrome-stable
+              google-chrome-stable
               cd mopro-wasm
-              wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }} --headless
+              wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }} --headless
     # test-e2e:
     #     runs-on: ubuntu-latest
     #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
@@ -306,8 +315,8 @@ jobs:
           - setup-halo2-wasm-env
           - build-halo2-wasm-web
         env:
-          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
-          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
+          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
+          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
         defaults:
           run:
               working-directory: test-e2e/web
@@ -317,8 +326,8 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: |
-                  ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
-                  ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
+                  ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
+                  ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
                 key: ${{ runner.os }}-cache-chrome-chromedriver
             - name: Restore cached halo2 wasm circuit
               uses: actions/cache@v4
@@ -331,10 +340,10 @@ jobs:
 
             - name: Check restored chrome and chromedriver dir
               run: |
-                  ls ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
-                  ls ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }} 
+                  ls ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
+                  ls ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }} 
             - name: Testing chrome start
-              run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }} --headless --no-sandbox
+              run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }} --headless --no-sandbox
             # TODO: remove verifying
             - name: Verify Chrome and ChromeDriver
               run: |
