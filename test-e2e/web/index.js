@@ -9,6 +9,7 @@ const chrome = require('selenium-webdriver/chrome');
     }
     options.addArguments('--headless');
     options.addArguments('--no-sandbox');
+    options.addArguments('--remote-debugging-pipe');
     options.addArguments('--enable-logging', '--v=1');
 
     const driverBuilder = new Builder()
