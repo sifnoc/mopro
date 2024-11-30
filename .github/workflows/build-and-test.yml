@@ -356,3 +356,4 @@ jobs:
                     sleep 1
                   done
                   yarn test
+                  cat chromedriver.log

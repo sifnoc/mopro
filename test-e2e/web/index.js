@@ -12,12 +12,14 @@ const chrome = require('selenium-webdriver/chrome');
     options.addArguments('--enable-logging', '--v=1');
 
     const driverBuilder = new Builder()
-    .forBrowser('chrome')    
+    .forBrowser('chrome')
     .setChromeOptions(options)
     
     // Configure chromewdriver if env set
     if (process.env.CHROMEDRIVER_BIN) {
-        const service = new chrome.ServiceBuilder(process.env.CHROMEDRIVER_BIN);
+        const service = new chrome.ServiceBuilder(process.env.CHROMEDRIVER_BIN)
+        .loggingTo('chromedriver.log')
+        .enableVerboseLogging();
         driverBuilder.setChromeService(service);
     }
     
@@ -28,7 +30,7 @@ const chrome = require('selenium-webdriver/chrome');
         const driverVersion = await driver.executeScript('return navigator.userAgent');
         console.log(`WebDriver user agent: ${driverVersion}`);
 
-        await driver.get('http://localhost:36471');
+        await driver.get('http://localhost:3000');
 
         // Wait for the test completion marker
         const statusDiv = await driver.findElement(By.id('test-status'));
