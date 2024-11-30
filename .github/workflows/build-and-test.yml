@@ -85,15 +85,15 @@ jobs:
           uses: browser-actions/setup-chrome@v1
           id: setup-chrome-chromedriver
           with:
-            chrome-version: 131
+            chrome-version: 130
             install-chromedriver: true
         - name: Cache Chrome and ChromeDriver
           id: cache-chrome-chromedriver
           uses: actions/cache@v4
           with:
             path: |
-              ${{ dirname(steps.setup-chrome-chromedriver.outputs.chrome-path) }}
-              ${{ dirname(steps.setup-chrome-chromedriver.outputs.chromedriver-path) }}
+              ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
+              ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
             key: ${{ runner.os }}-cache-chrome-chromedriver
     test-wasm-halo2:
         runs-on: ubuntu-latest
@@ -134,7 +134,11 @@ jobs:
           #       echo "ChromeDriver binary not found or not executable!"
           #     fi
           - name: Run wasm halo2 tests
-            run: cd mopro-wasm && wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }} --headless
+            run: |
+              echo "override default chrome path for 'wasm-pack test'"
+              ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }} /usr/local/bin/google-chrome-stable
+              cd mopro-wasm
+              wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }} --headless
     # test-e2e:
     #     runs-on: ubuntu-latest
     #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
