@@ -312,11 +312,6 @@ jobs:
             - name: Restore cached chrome and chromedriver
               uses: actions/cache@v4
               with:
-                path: ~/.cargo/bin/wasm-pack
-                key: ${{ runner.os }}-cache-chrome-chromedriver
-            - name: Restore cached chrome and chromedriver
-              uses: actions/cache@v4
-              with:
                 path: |
                   ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
                   ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
@@ -325,10 +320,27 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: |
-                  test-e2e/web/halo2-plonk-fibonacci
+                  test-e2e/web/halo2-plonk-fibonacci 
                   test-e2e/web/halo2-hyperplonk-fibonacci
                   test-e2e/web/halo2-gemini-fibonacci
                 key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
+            - name: Verify Chrome and ChromeDriver
+              run: |
+                echo "Checking Chrome binary at: $CHROME_BIN"
+                if [ -x "$CHROME_BIN" ]; then
+                  echo "Chrome binary found:"
+                  $CHROME_BIN --version
+                else
+                  echo "Chrome binary not found or not executable!"
+                fi
+            
+                echo "Checking ChromeDriver binary:"
+                if [ -x "$CHROMEDRIVER_BIN" ]; then
+                  echo "ChromeDriver binary found:"
+                  $CHROMEDRIVER_BIN --version
+                else
+                  echo "ChromeDriver binary not found or not executable!"
+                fi
             - name: Install dependencies
               run: yarn install
             - name: Run halo2-wasm-app server and test it
