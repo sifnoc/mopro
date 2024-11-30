@@ -313,7 +313,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: |
-                  ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
+                  
                   ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
                 key: ${{ runner.os }}-cache-chrome-chromedriver
             - name: Restore cached halo2 wasm circuit
@@ -324,8 +324,8 @@ jobs:
                   test-e2e/web/halo2-hyperplonk-fibonacci
                   test-e2e/web/halo2-gemini-fibonacci
                 key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
-            - name: Install ICU Data
-              run: sudo apt-get install -y libicu70
+            - name: Testing chrome start
+              run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }} --headless --no-sandbox
             # TODO: remove verifying
             - name: Verify Chrome and ChromeDriver
               run: |
@@ -359,4 +359,7 @@ jobs:
                   done
                   set +e
                   yarn test
+                  echo "=== chrome debug ==="
+                  cat chrome-debug.log
+                  echo "=== chromedriver log"
                   cat chromedriver.log
