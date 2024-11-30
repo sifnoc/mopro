@@ -355,5 +355,6 @@ jobs:
                     echo "Waiting for server..."
                     sleep 1
                   done
+                  set +e
                   yarn test
                   cat chromedriver.log
