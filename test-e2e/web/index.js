@@ -40,7 +40,7 @@ const chrome = require('selenium-webdriver/chrome');
         const driverVersion = await driver.executeScript('return navigator.userAgent');
         console.log(`WebDriver user agent: ${driverVersion}`);
 
-        await driver.get('http://localhost:33499');
+        await driver.get('http://localhost:3000');
 
         // Wait for the test completion marker
         const statusDiv = await driver.findElement(By.id('test-status'));
