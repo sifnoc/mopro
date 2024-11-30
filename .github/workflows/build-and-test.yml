@@ -85,7 +85,7 @@ jobs:
           uses: browser-actions/setup-chrome@v1
           id: setup-chrome-chromedriver
           with:
-            chrome-version: 130
+            chrome-version: 131
             install-chromedriver: true
         - name: Cache Chrome and ChromeDriver
           id: cache-chrome-chromedriver
