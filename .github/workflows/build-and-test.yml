@@ -63,8 +63,8 @@ jobs:
       runs-on: ubuntu-latest
       if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
       outputs:
-        chrome-dir: ${{ steps.setup-chrome-chromedriver.outputs.chrome-dir }}
-        chromedriver-dir: ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-dir }}
+        chrome-dir: ${{ steps.cache-chrome-chromedriver-dir.outputs.chrome-dir }}
+        chromedriver-dir: ${{ steps.cache-chrome-chromedriver-dir.outputs.chromedriver-dir }}
       steps:
         - uses: actions/checkout@v4
         - name: Install Rust toolchain
@@ -95,13 +95,11 @@ jobs:
         #       ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
         #       ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
             # key: ${{ runner.os }}-cache-chrome-chromedriver
-        - name: Get Chrome and ChromeDriver Directories
-          id: get-chrome-dir
+        - name: Parse Chrome and ChromeDriver Directories
+          id: cache-chrome-chromedriver-dir
           run: |
-            echo "CHROME_DIR=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }})" >> $GITHUB_ENV
-            echo "CHROMEDRIVER_DIR=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }})" >> $GITHUB_ENV
-            echo "::set-output name=chrome-dir::$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }})"
-            echo "::set-output name=chromedriver-dir::$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }})"
+            echo "chrome-dir=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }})" >> $GITHUB_OUTPUT
+            echo "chromedriver-dir=$(dirname ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }})" >> $GITHUB_OUTPUT
       
     test-wasm-halo2:
         runs-on: ubuntu-latest
