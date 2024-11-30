@@ -106,8 +106,8 @@ jobs:
         if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
         needs: setup-halo2-wasm-env
         env:
-          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
-          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
+          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome
+          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}/chromedriver
         steps:
           - uses: actions/checkout@v4
           - name: Restore cached wasm-pack
@@ -122,32 +122,14 @@ jobs:
                 ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
                 ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
               key: ${{ runner.os }}-cache-chrome-chromedriver
-          # - name: Verify Chrome and ChromeDriver
-          #   run: |
-          #     echo "Checking Chrome binary at: $CHROME_BIN"
-          #     if [ -x "$CHROME_BIN" ]; then
-          #       echo "Chrome binary found:"
-          #       $CHROME_BIN --version
-          #     else
-          #       echo "Chrome binary not found or not executable!"
-          #     fi
-          
-          #     echo "Checking ChromeDriver binary:"
-          #     if [ -x "$CHROMEDRIVER_BIN" ]; then
-          #       echo "ChromeDriver binary found:"
-          #       $CHROMEDRIVER_BIN --version
-          #     else
-          #       echo "ChromeDriver binary not found or not executable!"
-          #     fi
           - name: Run wasm halo2 tests
             run: |
               echo "Override default chrome path for 'wasm-pack test'"
-              ln -sf ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome /usr/local/bin/google-chrome-stable
+              ln -sf $CHROME_BIN /usr/local/bin/google-chrome-stable
               echo "Check override chrome version"
-              which google-chrome-stable
               google-chrome-stable --version
               cd mopro-wasm
-              wasm-pack test --chrome --chromedriver ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}/chromedriver --headless
+              wasm-pack test --chrome --chromedriver $CHROMEDRIVER_BIN --headless
     # test-e2e:
     #     runs-on: ubuntu-latest
     #     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
