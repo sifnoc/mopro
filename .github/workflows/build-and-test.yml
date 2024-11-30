@@ -324,6 +324,7 @@ jobs:
                   test-e2e/web/halo2-hyperplonk-fibonacci
                   test-e2e/web/halo2-gemini-fibonacci
                 key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
+            # TODO: remove verifying
             - name: Verify Chrome and ChromeDriver
               run: |
                 echo "Checking Chrome binary at: $CHROME_BIN"
