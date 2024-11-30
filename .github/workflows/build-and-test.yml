@@ -313,7 +313,7 @@ jobs:
               uses: actions/cache@v4
               with:
                 path: |
-                  
+                  ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
                   ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }}
                 key: ${{ runner.os }}-cache-chrome-chromedriver
             - name: Restore cached halo2 wasm circuit
