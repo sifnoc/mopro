@@ -92,8 +92,8 @@ jobs:
           uses: actions/cache@v4
           with:
             path: |
-              ${{ steps.setup-chrome-chromedriver.outputs.chrome-path }}
-              ${{ steps.setup-chrome-chromedriver.outputs.chromedriver-path }}
+              ${{ dirname(steps.setup-chrome-chromedriver.outputs.chrome-path) }}
+              ${{ dirname(steps.setup-chrome-chromedriver.outputs.chromedriver-path) }}
             key: ${{ runner.os }}-cache-chrome-chromedriver
     test-wasm-halo2:
         runs-on: ubuntu-latest
@@ -324,6 +324,11 @@ jobs:
                   test-e2e/web/halo2-hyperplonk-fibonacci
                   test-e2e/web/halo2-gemini-fibonacci
                 key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
+
+            - name: Check restored chrome and chromedriver dir
+              run: |
+                  ls ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }}
+                  ls ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-path }} 
             - name: Testing chrome start
               run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-path }} --headless --no-sandbox
             # TODO: remove verifying
