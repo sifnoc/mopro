@@ -1,4 +1,3 @@
-const { execSync } = require('child_process');
 const { Builder, By } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 
@@ -9,9 +8,11 @@ const chrome = require('selenium-webdriver/chrome');
         options.setChromeBinaryPath(process.env.CHROME_BIN);
     }
     options.addArguments('--headless');
+    options.addArguments('--no-sandbox');
+    options.addArguments('--enable-logging', '--v=1');
 
     const driverBuilder = new Builder()
-    .forBrowser('chrome')
+    .forBrowser('chrome')    
     .setChromeOptions(options)
     
     // Configure chromewdriver if env set
@@ -20,14 +21,14 @@ const chrome = require('selenium-webdriver/chrome');
         driverBuilder.setChromeService(service);
     }
     
-    const driver = await driverBuilder.build()
-    
-    // Log ChromeDriver version via WebDriver
-    const driverVersion = await driver.executeScript('return navigator.userAgent');
-    console.log(`WebDriver user agent: ${driverVersion}`);
-
     try {
-        await driver.get('http://localhost:3000');
+        const driver = await driverBuilder.build()
+        
+        // Log ChromeDriver version via WebDriver
+        const driverVersion = await driver.executeScript('return navigator.userAgent');
+        console.log(`WebDriver user agent: ${driverVersion}`);
+
+        await driver.get('http://localhost:36471');
 
         // Wait for the test completion marker
         const statusDiv = await driver.findElement(By.id('test-status'));
