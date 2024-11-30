@@ -297,8 +297,8 @@ jobs:
           - setup-halo2-wasm-env
           - build-halo2-wasm-web
         env:
-          CHROME_DIR: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
-          CHROMEDRIVER_DIR: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
+          CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome
+          CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}/chromedriver
         defaults:
           run:
               working-directory: test-e2e/web
@@ -319,28 +319,21 @@ jobs:
                   test-e2e/web/halo2-hyperplonk-fibonacci
                   test-e2e/web/halo2-gemini-fibonacci
                 key: ${{ runner.os }}-halo2-wasm-circuit-${{ hashFiles('mopro-wasm/**/*') }}
-
-            - name: Check restored chrome and chromedriver dir
-              run: |
-                  ls ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
-                  ls ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }} 
-            # - name: Testing chrome start
-            #   run: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome --headless --no-sandbox
             # TODO: remove verifying
             - name: Verify Chrome and ChromeDriver
               run: |
-                echo "Checking Chrome binary at: $CHROME_DIR"
-                if [ -x "$CHROME_DIR" ]; then
+                echo "Checking Chrome binary at: $CHROME_BIN"
+                if [ -x "$CHROME_BIN" ]; then
                   echo "Chrome binary found:"
-                  $CHROME_DIR/chrome --version
+                  $CHROME_BIN --version
                 else
                   echo "Chrome binary not found or not executable!"
                 fi
             
                 echo "Checking ChromeDriver binary:"
-                if [ -x "$CHROMEDRIVER_DIR" ]; then
-                  echo "ChromeDriver binary found: $CHROMEDRIVER_DIR"
-                  $CHROMEDRIVER_DIR/chromedriver --version
+                if [ -x "$CHROMEDRIVER_BIN" ]; then
+                  echo "ChromeDriver binary found: $CHROMEDRIVER_BIN"
+                  $CHROMEDRIVER_BIN --version
                 else
                   echo "ChromeDriver binary not found or not executable!"
                 fi
@@ -357,9 +350,4 @@ jobs:
                     echo "Waiting for server..."
                     sleep 1
                   done
-                  set +e
                   yarn test
-                  echo "=== chrome debug ==="
-                  cat chrome-debug.log
-                  echo "=== chromedriver log"
-                  cat chromedriver.log

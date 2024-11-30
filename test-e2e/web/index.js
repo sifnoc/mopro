@@ -9,8 +9,6 @@ const chrome = require('selenium-webdriver/chrome');
     }
     options.addArguments('--headless');
     options.addArguments('--no-sandbox');
-    options.addArguments('--remote-debugging-pipe');
-    options.addArguments('--enable-logging', '--v=1', '--log-path=chrome-debug.log');
 
     const driverBuilder = new Builder()
     .forBrowser('chrome')
@@ -27,14 +25,13 @@ const chrome = require('selenium-webdriver/chrome');
     
     try {
         const driver = await driverBuilder.build();
-        console.log("driver initiated");
-        await driver.manage().setTimeouts({
-            implicit: 10000,
-            pageLoad: 120000,
-            script: 120000,
-        });
-        console.log("extend timeout params");
-        
+        // console.log("driver initiated");
+        // await driver.manage().setTimeouts({
+        //     implicit: 10000,
+        //     pageLoad: 120000,
+        //     script: 120000,
+        // });
+        // console.log("extend timeout params");
         
         // Log ChromeDriver version via WebDriver
         const driverVersion = await driver.executeScript('return navigator.userAgent');
