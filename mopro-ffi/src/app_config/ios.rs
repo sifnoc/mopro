@@ -54,6 +54,7 @@ pub fn build() {
                 )))
             })
             .collect();
+        println!("build_combined_arch: {:?}", out_lib_paths);
         for arch in archs {
             install_arch(arch.to_string());
             let mut build_cmd = Command::new("cargo");
@@ -80,6 +81,7 @@ pub fn build() {
         for p in out_lib_paths {
             lipo_cmd.arg(p.to_str().unwrap());
         }
+        println!("performing lipo: {:?}", lipo_cmd);
         lipo_cmd
             .spawn()
             .expect("Failed to spawn lipo")
