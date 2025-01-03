@@ -48,6 +48,17 @@ pub fn build_project(
         return Ok(());
     };
 
+    // Detect `Config.toml`
+    let config_path = current_dir.join("Config.toml");
+
+    // Check if the config file exist
+    if !config_path.exists() {
+        return Err(Error::msg(
+            "Config.toml does exists. Please run 'mopro init'",
+        ));
+    }
+    let mut config = read_config(&config_path)?;
+
     let mode: String = match arg_mode.as_deref() {
         None => select_mode()?,
         Some(m) => {
@@ -92,16 +103,6 @@ pub fn build_project(
         style::print_yellow("No platform selected. Use space to select platform(s).".to_string());
         build_project(&Some(mode), &None)?;
     } else {
-        let config_path = current_dir.join("Config.toml");
-
-        // Check if the config file exist
-        if !config_path.exists() {
-            return Err(Error::msg(
-                "Config.toml does exists. Please run 'mopro init'",
-            ));
-        }
-        let mut config = read_config(&config_path)?;
-
         // Supported adapters and platforms:
         // | Platforms | Circom | Halo2 |
         // |-----------|--------|-------|
