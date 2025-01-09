@@ -8,3 +8,5 @@ pub mod hyperplonk;
 
 #[cfg(feature = "gemini")]
 pub mod gemini;
+
+pub mod fibonacci;

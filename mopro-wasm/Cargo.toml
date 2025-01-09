@@ -16,6 +16,7 @@ plonk-fibonacci = { package = "plonk-fibonacci", git = "https://github.com/sifno
 hyperplonk-fibonacci = { package = "hyperplonk-fibonacci", git = "https://github.com/sifnoc/plonkish-fibonacci-sample.git", optional = true }
 gemini-fibonacci = { package = "gemini-fibonacci", git = "https://github.com/sifnoc/plonkish-fibonacci-sample.git", optional = true }
 rand = "0.8.5"
+halo2-fibonacci = { git = "https://github.com/ElusAegis/halo2-fibonacci-sample", version = "0.1.0" }
 
 [target.wasm32-unknown-unknown.dependencies]
 console_error_panic_hook = "0.1.7"

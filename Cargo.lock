@@ -1882,6 +1882,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1b43ede17f21864e81be2fa654110bf1e793774238d86ef8555c37e6519c0403"
 
 [[package]]
+name = "halo2-fibonacci"
+version = "0.1.0"
+source = "git+https://github.com/ElusAegis/halo2-fibonacci-sample#4e5f955c936e4c9199a8183152dbad780b10c6d6"
+dependencies = [
+ "bincode",
+ "halo2_proofs 0.2.0 (git+https://github.com/privacy-scaling-explorations/halo2?tag=v2023_04_20)",
+ "halo2curves 0.3.2",
+ "rand",
+ "serde",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "halo2-keccak-256"
 version = "0.1.0"
 source = "git+https://github.com/ElusAegis/halo2-keccak-stable.git#5c49f4dccd49f1a33f025f5266d1d7f08e996dcb"
@@ -2706,6 +2719,7 @@ dependencies = [
  "console_error_panic_hook",
  "gemini-fibonacci",
  "getrandom",
+ "halo2-fibonacci",
  "hyperplonk-fibonacci",
  "plonk-fibonacci",
  "rand",
