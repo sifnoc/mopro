@@ -148,7 +148,7 @@ jobs:
           which chromedriver
           chromedriver --version
           echo "Override default chrome path for 'wasm-pack test'"
-          ln -sf $CHROME_BIN /usr/local/bin/google-chrome-stable
+          ln -sf $CHROME_BIN /usr/local/bin/google-chrome
           echo "Check override chrome version"
           google-chrome-stable --version
           cd mopro-wasm
