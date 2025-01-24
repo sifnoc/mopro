@@ -143,12 +143,14 @@ jobs:
       - name: Run wasm halo2 tests
         run: |
           set -x
+          ls -all /usr/bin
+          which chrome
           which google-chrome
           google-chrome --version
           which chromedriver
           chromedriver --version
           echo "Override default chrome path for 'wasm-pack test'"
-          ln -sf $CHROME_BIN /usr/bin/google-chrome
+          sudo ln -sf $CHROME_BIN /usr/bin/google-chrome
           echo "Check override chrome version"
           google-chrome-stable --version
           cd mopro-wasm
