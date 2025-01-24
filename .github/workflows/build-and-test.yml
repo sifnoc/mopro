@@ -157,7 +157,7 @@ jobs:
           google-chrome --version
           which google-chrome-stable
           google-chrome-stable --version
-          wasm-pack test --chrome --chromedriver $CHROMEDRIVER_BIN --headless -- --all-features
+          CHROME=$CHROME_BIN CHROMEDRIVER=$CHROMEDRIVER_BIN wasm-pack test --chrome --headless -- --all-features
   test-e2e:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
