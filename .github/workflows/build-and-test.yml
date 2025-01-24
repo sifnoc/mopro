@@ -103,7 +103,7 @@ jobs:
         uses: browser-actions/setup-chrome@v1
         id: setup-chrome-chromedriver
         with:
-          chrome-version: 130
+          chrome-version: 132.0.6834.83
           install-chromedriver: true
       - name: Parse Chrome and ChromeDriver Directories
         id: parsed-chrome-chromedriver-dir
@@ -316,21 +316,11 @@ jobs:
     needs:
       - setup-halo2-wasm-env
       - build-halo2-wasm-web
-    env:
-      CHROME_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}/chrome
-      CHROMEDRIVER_BIN: ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}/chromedriver
     defaults:
       run:
         working-directory: test-e2e/web
     steps:
       - uses: actions/checkout@v4
-      - name: Restore cached chrome and chromedriver
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ needs.setup-halo2-wasm-env.outputs.chrome-dir }}
-            ${{ needs.setup-halo2-wasm-env.outputs.chromedriver-dir }}
-          key: ${{ runner.os }}-cache-chrome-chromedriver
       - name: Restore cached halo2 wasm circuit
         uses: actions/cache@v4
         with:
