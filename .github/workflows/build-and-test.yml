@@ -142,11 +142,20 @@ jobs:
           key: ${{ runner.os }}-cache-chrome-chromedriver
       - name: Run wasm halo2 tests
         run: |
+          set -x
+          which google-chrome
+          google-chrome --version
+          which chromedriver
+          chromedriver --version
           echo "Override default chrome path for 'wasm-pack test'"
           ln -sf $CHROME_BIN /usr/local/bin/google-chrome-stable
           echo "Check override chrome version"
           google-chrome-stable --version
           cd mopro-wasm
+          which google-chrome
+          google-chrome --version
+          which google-chrome-stable
+          google-chrome-stable --version
           wasm-pack test --chrome --chromedriver $CHROMEDRIVER_BIN --headless -- --all-features
   test-e2e:
     runs-on: ubuntu-latest
