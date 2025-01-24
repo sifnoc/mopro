@@ -341,6 +341,10 @@ jobs:
         run: yarn install
       - name: Run halo2-wasm-app server and test it
         run: |
+          which google-chrome
+          google-chrome --version
+          which chromedriver
+          chromedriver --version
           nohup yarn start &
           for i in {1..30}; do
             if curl --silent http://localhost:3000 > /dev/null; then
