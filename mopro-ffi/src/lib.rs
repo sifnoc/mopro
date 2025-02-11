@@ -1,5 +1,7 @@
 pub mod app_config;
 
+uniffi::setup_scaffolding!();
+
 #[cfg(feature = "circom")]
 mod circom;
 #[cfg(feature = "halo2")]
@@ -69,8 +71,6 @@ macro_rules! halo2_app {
     };
 }
 
-uniffi::setup_scaffolding!();
-
 use thiserror::Error;
 
 #[derive(Debug, Error, uniffi::Error)]
@@ -126,18 +126,15 @@ pub struct GenerateProofResult {
 #[macro_export]
 macro_rules! app {
     () => {
+        uniffi::setup_scaffolding!();
+
         // These are mandatory imports for the uniffi to pick them up and match with UDL
         use mopro_ffi::{
             witness::WitnessFn, GenerateProofResult, MoproError, ProofCalldata, G1, G2,
         };
 
-        uniffi::setup_scaffolding!();
-
         mopro_ffi::circom_app!();
 
         mopro_ffi::halo2_app!();
-
-        // TODO: remove
-        // uniffi::include_scaffolding!("mopro");
     };
 }

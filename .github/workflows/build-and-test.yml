@@ -165,7 +165,7 @@ jobs:
           toolchain: stable
           override: true
       - name: Build iOS xcframework
-        run: cd test-e2e && cargo run --bin ios
+        run: cd test-e2e && cargo run --bin ios --features "halo2 circom"
       - name: Cache xcframework
         id: cache-xcframework
         uses: actions/cache/save@v4
@@ -238,7 +238,7 @@ jobs:
           toolchain: stable
           override: true
       - name: Build Android bindings
-        run: cd test-e2e && cargo run --bin android
+        run: cd test-e2e && cargo run --bin android --features "halo2 circom"
       - name: Cache android lib
         id: cache-android-lib
         uses: actions/cache/save@v4

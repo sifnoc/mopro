@@ -115,7 +115,9 @@ pub fn build() {
             "--language",
             "swift",
             "--out-dir",
-            bindings_out.to_str().expect("Invalid output directory"),
+            swift_bindings_dir
+                .to_str()
+                .expect("Invalid output directory"),
         ])
         .status()
         .expect("Failed to execute uniffi-bindgen command");
